@@ -76,6 +76,7 @@ pub struct BcCamera {
     // Certain commands such as logout require the username/pass in plain text.... why....???
     credentials: Credentials,
     abilities: RwLock<HashMap<String, ReadKind>>,
+    primary_stream: StreamKind,
     #[allow(dead_code)]
     cancel: CancellationToken,
 }
@@ -102,6 +103,8 @@ pub struct BcCameraOpt {
     pub max_discovery_retries: usize,
     /// Credentials for login
     pub credentials: Credentials,
+    /// The primary stream type to initialize with
+    pub primary_stream: StreamKind,
     /// Toggle debug print of underlying data
     pub debug: bool,
 }
@@ -361,6 +364,7 @@ impl BcCamera {
             channel_id: options.channel_id,
             logged_in: AtomicBool::new(false),
             credentials: Credentials::new(username, passwd),
+            primary_stream: options.primary_stream,
             abilities: Default::default(),
             cancel: CancellationToken::new(),
         };
@@ -382,6 +386,15 @@ impl BcCamera {
     // This will only work after login
     fn get_credentials(&self) -> &Credentials {
         &self.credentials
+    }
+
+    /// Gets the stream type code (0 for Main/Extern, 1 for Sub) corresponding to the primary stream.
+    pub fn primary_stream_code(&self) -> u8 {
+        match self.primary_stream {
+            StreamKind::Main => 0,
+            StreamKind::Sub => 1,
+            StreamKind::Extern => 0,
+        }
     }
 
     async fn has_ability<T: Into<String>>(&self, name: T) -> ReadKind {

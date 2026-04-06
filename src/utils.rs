@@ -87,6 +87,13 @@ impl AddressOrUid {
             }
         }?;
 
+        let primary_stream = camera_config
+            .stream
+            .as_stream_kinds()
+            .first()
+            .copied()
+            .unwrap_or(neolink_core::bc_protocol::StreamKind::Main);
+
         let options = BcCameraOpt {
             name: camera_config.name.clone(),
             channel_id: camera_config.channel_id,
@@ -99,6 +106,7 @@ impl AddressOrUid {
                 username: camera_config.username.clone(),
                 password: camera_config.password.clone(),
             },
+            primary_stream,
             debug: camera_config.debug,
             max_discovery_retries: camera_config.max_discovery_retries,
         };

@@ -15,7 +15,7 @@ impl BcCamera {
                 channel_id: self.channel_id,
                 msg_num,
                 response_code: 0,
-                stream_type: 0,
+                stream_type: self.primary_stream_code(),
                 class: 0x6414,
             },
             body: BcBody::ModernMsg(ModernMsg {
